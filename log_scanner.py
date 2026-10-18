@@ -55,8 +55,39 @@ first_error_line = 0    # line_number of the first ERROR; 0 means none seen
 #            else                  -> unknown_count += 1
 # Commit after the loop counts correctly.
 
+for raw_line in log_text.splitlines():
+    line_number += 1
+    line = raw_line.strip()
+    
+    if line == "" or line.startswith("#"):
+        skipped += 1
+        continue
+        
+    if line == "END":
+        print("END marker reached, stopping.")
+        break
+        
+    lines_scanned += 1
+
+    if "| ERROR |" in line:
+        error_count += 1
+        if first_error_line == 0:
+            first_error_line = line_number
+        print(f"ERROR on line {line_number}: {line}")
+    elif "| WARN |" in line:
+        warn_count += 1
+    elif "| INFO |" in line:
+        info_count += 1
+    else:
+        unknown_count += 1
+
 # ---- TODO 3: the verdict -------------------------------------------------------
 # verdict = "PASS" if error_count is 0, otherwise "FAIL"  (if / else)
+
+if error_count == 0:
+    verdict = "PASS"
+else:
+    verdict = "FAIL"
 
 # ---- Summary (provided, except the two TODO lines) ----------------------------
 print()
@@ -67,6 +98,14 @@ print(f"ERROR: {error_count}")
 print(f"WARN: {warn_count}")
 print(f"INFO: {info_count}")
 print(f"UNKNOWN: {unknown_count}")
+
 # TODO 4: if first_error_line > 0 print f"First ERROR: line {first_error_line}"
 #         else print "First ERROR: none"
+
+if first_error_line > 0:
+    print(f"First ERROR: line {first_error_line}")
+else:
+    print("First ERROR: none")
+
 # TODO 5: print f"Verdict: {verdict}"
+print(f"Verdict: {verdict}")
